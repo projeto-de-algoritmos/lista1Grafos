@@ -13,8 +13,8 @@ class Cell:
 def init_variables(rows, cols):
 
     cell_list = []
-    for i in xrange(rows):
-        for j in xrange(cols):
+    for i in range(rows):
+        for j in range(cols):
             cell_list.append((i, j))
 
     cell_set = ds.disjoint_set(cell_list)
@@ -27,8 +27,8 @@ def init_variables(rows, cols):
     # print cells[1][0]
 
     edges = []
-    for x in xrange(rows):
-        for y in xrange(cols):
+    for x in range(rows):
+        for y in range(cols):
             edges.append((x, y, 'L'))
             edges.append((x, y, 'U'))
 
