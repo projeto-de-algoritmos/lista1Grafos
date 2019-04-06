@@ -15,9 +15,6 @@ MAP_WIDTH = TILE_SIZE * MAP_ROWS
 MAP_COLS = 12
 MAP_HEIGHT = TILE_SIZE * MAP_COLS
 
-PANEL_HEIGHT = 10
-PANEL_Y = SCREEN_HEIGHT - PANEL_HEIGHT
-
 LIMIT_FPS = 20
 
 FOV_ALGO = 0 # default field of view algorithm provided by tcod
@@ -110,7 +107,7 @@ def eraseMap(con):
             tcod.console_put_char_ex(con, x, y, ' ', tcod.white, tcod.black)
 
 
-def render(player, con, panel, fov_map, check_explored, msgs):
+def render(player, con, fov_map, check_explored):
     tcod.map_compute_fov(fov_map, player.xPos, player.yPos, TORCH_RADIUS, FOV_LIGHT_WALLS, FOV_ALGO)
 
     for y in range(MAP_HEIGHT):
@@ -137,7 +134,6 @@ def render(player, con, panel, fov_map, check_explored, msgs):
                     tcod.console_put_char_ex(con, x, y, '.', tcod.light_yellow, tcod.black)
 
     tcod.console_put_char_ex(con, MAP_WIDTH-2, MAP_HEIGHT-2, 'X', tcod.fuchsia, tcod.black)
-    render_panel(msgs, panel)
     player.draw(con)
 
 
@@ -199,17 +195,17 @@ def main():
 
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
-            fov_map.walkable = not map[x][y].wall
-            fov_map.transparent = not map[x][y].wall
-
-    render_all(player, con, panel, fov_map, True, msgs)
+            fov_map.walkable[:]
+            fov_map.transparent[:]
+            
+    render(player, con, fov_map, True)
     tcod.console_blit(con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0, 0)
     tcod.console_flush()
 
     while not tcod.console_is_window_closed():
 
         if player.xPos == MAP_WIDTH-2 and player.yPos == MAP_HEIGHT-2:
-            render_all(player, con, panel, fov_map, False, msgs)
+            render(player, con, fov_map, False)
             tcod.console_put_char_ex(con, 1, 1, 'S', tcod.pink, tcod.black)
             player.draw(con)
             tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
@@ -218,7 +214,7 @@ def main():
             key = tcod.console_wait_for_keypress(True)
             break
 
-        render_all(player, con, panel, fov_map, fog_of_war, msgs)
+        render(player, con, fov_map, fog_of_war)
 
         tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
         tcod.console_flush()
@@ -228,14 +224,14 @@ def main():
         quit = keyboard_input(player, con)
 
         if quit:
-            render_all(player, con, panel, fov_map, True, quit_msgs)
+            render(player, con, fov_map, True, qui)
             tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
             tcod.console_flush()
 
             key = tcod.console_wait_for_keypress(True)
 
             if key.vk == tcod.KEY_ESCAPE:
-                render_all(player, con, panel, fov_map, False, quit_msgs)
+                render(player, con, fov_map, False, qui)
                 player.draw(con)
                 tcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
                 tcod.console_flush()
